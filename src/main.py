@@ -27,8 +27,8 @@ def main():
 
     # Minecraft:
     minecraft_version = sync_file.data['minecraft-version']
-    # install_minecraft_version(minecraft_version)
-    # install_forge_version(minecraft_version)
+    install_minecraft_version(minecraft_version)
+    install_forge_version(minecraft_version)
     forge_version = get_forge_version(minecraft_version)
 
     create_custom_profile(forge_version)
