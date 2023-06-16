@@ -3,6 +3,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Public:
+public/
+
+# Idea files:
+.idea
+
+# Jar files:
+*.jar
+
 # C extensions
 *.so
 
