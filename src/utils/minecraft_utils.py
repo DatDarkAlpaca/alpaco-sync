@@ -7,14 +7,47 @@ from src.utils.json_utils import JsonDB
 from src.constants import ALPACO_SYNC_PROFILE_NAME, PUBLIC_MODS_FOLDER_NAME
 
 
+def check_if_minecraft_version_installed(minecraft_version: str) -> bool:
+    minecraft_directory = minecraft_launcher_lib.utils.get_minecraft_directory()
+    installed_versions = minecraft_launcher_lib.utils.get_installed_versions(minecraft_directory)
+
+    if not installed_versions:
+        return False
+
+    for version in installed_versions:
+        if version['id'] == minecraft_version:
+
+            return True
+
+    return False
+
+
 def install_minecraft_version(minecraft_version: str):
     logging.info(f"Installing minecraft {minecraft_version}")
     minecraft_directory = minecraft_launcher_lib.utils.get_minecraft_directory()
     minecraft_launcher_lib.install.install_minecraft_version(minecraft_version, minecraft_directory)
 
 
-def install_forge_version(minecraft_version: str):
+def check_if_latest_forge_version_installed(minecraft_version: str) -> bool:
+    minecraft_directory = minecraft_launcher_lib.utils.get_minecraft_directory()
+    installed_versions = minecraft_launcher_lib.utils.get_installed_versions(minecraft_directory)
+
+    if not installed_versions:
+        return False
+
+    latest_forge_subversion = get_latest_forge_subversion(minecraft_version)
+    version_id = f"{minecraft_version}-forge-{latest_forge_subversion}"
+
+    for version in installed_versions:
+        if version['id'] == version_id:
+            return True
+
+    return False
+
+
+def install_forge_version(minecraft_version: str, forge_subversion: str = None):
     forge_version = minecraft_launcher_lib.forge.find_forge_version(minecraft_version)
+
     if not forge_version:
         logging.error('The forge version specified by the vendor is invalid. Please contact the tool\'s admin')
         return
@@ -22,11 +55,17 @@ def install_forge_version(minecraft_version: str):
     logging.info(f"Installing forge {forge_version}")
 
     minecraft_directory = minecraft_launcher_lib.utils.get_minecraft_directory()
-    minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_directory)
+
+    if not forge_subversion:
+        minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_directory)
 
 
-def get_forge_version(minecraft_version: str) -> str:
+def get_latest_forge_version(minecraft_version: str) -> str:
     return minecraft_launcher_lib.forge.find_forge_version(minecraft_version)
+
+
+def get_latest_forge_subversion(minecraft_version: str) -> str:
+    return minecraft_launcher_lib.forge.find_forge_version(minecraft_version).split('-')[1]
 
 
 def create_custom_profile(forge_version: str, icon_id: str = 'Lectern_Book'):

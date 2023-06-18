@@ -26,12 +26,18 @@ def main():
         logging.info('The current java version matches the requirements. Proceeding with the installation')
 
     # Minecraft:
-    minecraft_version = sync_file.data['minecraft-version']
-    install_minecraft_version(minecraft_version)
-    install_forge_version(minecraft_version)
-    forge_version = get_forge_version(minecraft_version)
+    required_minecraft_version = sync_file.data['minecraft-version']
 
-    create_custom_profile(forge_version)
+    if not check_if_minecraft_version_installed(required_minecraft_version):
+        logging.error('You do not have the required minecraft version. Installing.')
+        install_minecraft_version(required_minecraft_version)
+
+    latest_forge_version = get_latest_forge_version(required_minecraft_version)
+    if not check_if_latest_forge_version_installed(required_minecraft_version):
+        logging.error('You do not have the required forge version. Installing.')
+        install_forge_version(required_minecraft_version)
+
+    create_custom_profile(latest_forge_version)
     install_mods()
 
 
